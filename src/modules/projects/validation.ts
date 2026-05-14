@@ -5,4 +5,9 @@ export const createProjectSchema = z.object({
     description: z.string().optional(),
 });
 
+export const addMemberSchema = z.object({
+    userId: z.string(),
+});
+
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
+export type AddMemberInput = z.infer<typeof addMemberSchema>;

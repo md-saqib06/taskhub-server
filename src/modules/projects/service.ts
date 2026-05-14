@@ -2,9 +2,12 @@ import {
     createProject,
     createProjectMembership,
     getProjectsByUserId,
+    addProjectMember,
+    getProjectMembers,
+    findProjectMembership,
 } from "./repository";
-
 import { CreateProjectInput } from "./validation";
+import { requireProjectMember, requireProjectOwner } from "../../shared/utils/project-permissions";
 
 export const createProjectService = async (
     data: CreateProjectInput,
@@ -35,4 +38,32 @@ export const getProjectsService = async (
         ...membership.project,
         role: membership.role,
     }));
+};
+
+export const addProjectMemberService = async (
+    projectId: string,
+    currentUserId: string,
+    targetUserId: string
+) => {
+    await requireProjectOwner(
+        projectId,
+        currentUserId
+    );
+
+    return addProjectMember(
+        projectId,
+        targetUserId
+    );
+};
+
+export const getProjectMembersService = async (
+    projectId: string,
+    userId: string
+) => {
+    await requireProjectMember(
+        projectId,
+        userId
+    );
+
+    return getProjectMembers(projectId);
 };

@@ -35,3 +35,60 @@ export const getProjectsByUserId = async (
         },
     });
 };
+
+export const findProjectById = async (
+    projectId: string
+) => {
+    return prisma.project.findUnique({
+        where: {
+            id: projectId,
+        },
+    });
+};
+
+export const findProjectMembership = async (
+    projectId: string,
+    userId: string
+) => {
+    return prisma.projectMember.findUnique({
+        where: {
+            projectId_userId: {
+                projectId,
+                userId,
+            },
+        },
+    });
+};
+
+export const addProjectMember = async (
+    projectId: string,
+    userId: string
+) => {
+    return prisma.projectMember.create({
+        data: {
+            projectId,
+            userId,
+            role: "MEMBER",
+        },
+    });
+};
+
+export const getProjectMembers = async (
+    projectId: string
+) => {
+    return prisma.projectMember.findMany({
+        where: {
+            projectId,
+        },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    username: true,
+                    avatarUrl: true,
+                },
+            },
+        },
+    });
+};
