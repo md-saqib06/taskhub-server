@@ -15,4 +15,6 @@ export const loginSchema = z.object({
 
 export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
-export type CreateUserInput = z.infer<typeof signupSchema>;
+export type CreateUserInput = Omit<z.infer<typeof signupSchema>, "password"> & {
+    passwordHash: string;
+};

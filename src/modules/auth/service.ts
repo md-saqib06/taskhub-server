@@ -27,21 +27,22 @@ export const signupService = async (data: SignupInput) => {
         throw new Error("Username already exists");
     }
 
-    const passwordHash = await hashPassword(data.password);
+    const hashedPassword = await hashPassword(data.password);
     const avatarUrl = data.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${data.username}`;
 
     const user = await createUser({
         name: data.name,
         username: data.username,
         email: data.email,
-        password: passwordHash,
+        passwordHash: hashedPassword,
         avatarUrl,
     });
 
     const token = generateToken(user.id);
+    const { passwordHash, ...safeUser } = user;
 
     return {
-        user,
+        user: safeUser,
         token,
     };
 };
@@ -63,9 +64,26 @@ export const loginService = async (data: LoginInput) => {
     }
 
     const token = generateToken(user.id);
+    const { passwordHash, ...safeUser } = user;
 
     return {
-        user,
+        user: safeUser,
         token,
     };
+};
+
+import { findUserById } from "./repository";
+
+export const getCurrentUserService = async (
+    userId: string
+) => {
+    const user = await findUserById(userId);
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    const { passwordHash, ...safeUser } = user;
+
+    return safeUser;
 };
