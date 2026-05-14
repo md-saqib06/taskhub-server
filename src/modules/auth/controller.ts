@@ -37,10 +37,7 @@ export const loginController = async (
     try {
         const validatedData = loginSchema.parse(req.body);
 
-        const result = await loginService(
-            validatedData.email,
-            validatedData.password
-        );
+        const result = await loginService(validatedData);
 
         res.status(200).json(result);
     } catch (error) {
