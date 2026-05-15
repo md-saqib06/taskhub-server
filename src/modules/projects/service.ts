@@ -5,12 +5,11 @@ import {
     addProjectMember,
     getProjectMembers,
     findProjectMembership,
+    getProjectById,
 } from "./repository";
 import { CreateProjectInput } from "./validation";
 import { requireProjectMember, requireProjectOwner } from "../../shared/utils/project-permissions";
-import {
-    getProjectById,
-} from "./repository";
+import { createActivity } from "../../shared/services/activity.service";
 
 export const getProjectByIdService = async (
     projectId: string,
@@ -47,6 +46,13 @@ export const createProjectService = async (
         ownerId
     );
 
+    await createActivity({
+        type: "PROJECT_CREATED",
+        message: `Created project "${project.name}"`,
+        userId: ownerId,
+        projectId: project.id,
+    });
+
     return project;
 };
 
@@ -72,11 +78,20 @@ export const addProjectMemberService = async (
         projectId,
         currentUserId
     );
-
-    return addProjectMember(
+    const result = await addProjectMember(
         projectId,
         targetUserId
     );
+    const projectMembership = await findProjectMembership(projectId, targetUserId);
+
+    await createActivity({
+        type: "MEMBER_ADDED",
+        message: `Added ${projectMembership?.user?.username || "new member"} to the project`,
+        userId: currentUserId,
+        projectId,
+    });
+
+    return result;
 };
 
 export const getProjectMembersService = async (
