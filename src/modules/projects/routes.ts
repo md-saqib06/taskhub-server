@@ -3,6 +3,7 @@ import { Router } from "express";
 import {
     addProjectMemberController,
     createProjectController,
+    getProjectByIdController,
     getProjectMembersController,
     getProjectsController,
 } from "./controller";
@@ -18,5 +19,6 @@ router.post("/:id/members", addProjectMemberController);
 
 router.get("/:id/members", getProjectMembersController);
 router.get("/", getProjectsController);
+router.get("/:id", getProjectByIdController);
 
 export default router;

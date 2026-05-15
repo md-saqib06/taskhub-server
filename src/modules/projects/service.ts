@@ -8,6 +8,30 @@ import {
 } from "./repository";
 import { CreateProjectInput } from "./validation";
 import { requireProjectMember, requireProjectOwner } from "../../shared/utils/project-permissions";
+import {
+    getProjectById,
+} from "./repository";
+
+export const getProjectByIdService = async (
+    projectId: string,
+    userId: string
+) => {
+    await requireProjectMember(
+        projectId,
+        userId
+    );
+
+    const project =
+        await getProjectById(projectId);
+
+    if (!project) {
+        throw new Error(
+            "Project not found"
+        );
+    }
+
+    return project;
+};
 
 export const createProjectService = async (
     data: CreateProjectInput,

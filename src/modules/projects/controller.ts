@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import {
     addProjectMemberService,
     createProjectService,
+    getProjectByIdService,
     getProjectMembersService,
     getProjectsService,
 } from "./service";
@@ -32,6 +33,42 @@ export const createProjectController = async (
         );
 
         res.status(201).json(project);
+    } catch (error) {
+        res.status(400).json({
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Something went wrong",
+        });
+    }
+};
+
+export const getProjectByIdController = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        const userId = req.user?.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: "Unauthorized",
+            });
+        }
+        const projectId = req.params.id as string;
+
+        if (!projectId) {
+            return res.status(400).json({
+                message: "Project ID is required",
+            });
+        }
+
+        const project = await getProjectByIdService(
+            projectId,
+            userId
+        );
+
+        res.status(200).json(project);
     } catch (error) {
         res.status(400).json({
             message:

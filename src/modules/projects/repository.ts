@@ -36,6 +36,16 @@ export const getProjectsByUserId = async (
     });
 };
 
+export const getProjectById = async (
+    projectId: string
+) => {
+    return prisma.project.findUnique({
+        where: {
+            id: projectId,
+        },
+    });
+};
+
 export const findProjectById = async (
     projectId: string
 ) => {

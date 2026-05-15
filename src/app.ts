@@ -8,7 +8,13 @@ import userRoutes from "./modules/users/routes";
 
 const app = express();
 
-app.use(cors());
+const origins = process.env.FRONTEND_ORIGINS?.split(",");
+app.use(
+    cors({
+        origin: origins,
+        credentials: true,
+    })
+);
 app.use(express.json());
 app.use(cookieParser());
 
