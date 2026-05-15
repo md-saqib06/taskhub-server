@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./modules/auth/routes";
 import projectRoutes from "./modules/projects/routes";
 import userRoutes from "./modules/users/routes";
+import taskRoutes from "./modules/tasks/routes";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(cookieParser());
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/projects", projectRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/tasks", taskRoutes);
 
 app.get("/", (_req, res) => {
     res.json({
