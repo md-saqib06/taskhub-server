@@ -101,3 +101,14 @@ export const getCurrentUserController = async (
         });
     }
 };
+
+export const logoutController = (
+    _req: Request,
+    res: Response
+) => {
+    res.clearCookie("token");
+
+    return res.status(200).json({
+        message: "Logged out",
+    });
+};
