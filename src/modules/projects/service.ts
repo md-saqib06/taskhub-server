@@ -56,7 +56,6 @@ export const getProjectsService = async (
     const memberships = await getProjectsByUserId(
         userId
     );
-    console.log({ memberships });
 
     return memberships.map((membership: any) => ({
         ...membership.project,

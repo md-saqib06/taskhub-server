@@ -21,7 +21,7 @@ model User {
   projectMemberships ProjectMember[]
   assignedTasks Task[] @relation("AssignedTasks")
   createdTasks  Task[] @relation("CreatedTasks")
-  
+  activities ActivityLog[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -42,6 +42,7 @@ model Project {
   owner       User            @relation("ProjectOwner", fields: [ownerId], references: [id])
   members     ProjectMember[]
   tasks Task[]
+  activities ActivityLog[]
 
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
@@ -96,9 +97,40 @@ model Task {
   project        Project       @relation(fields: [projectId], references: [id])
 
   assignedUser   User?         @relation("AssignedTasks", fields: [assignedUserId], references: [id])
+  activities ActivityLog[]
 
   createdBy      User          @relation("CreatedTasks", fields: [createdById], references: [id])
 
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+}
+
+// Activity Log Model
+
+enum ActivityType {
+  PROJECT_CREATED
+  MEMBER_ADDED
+  TASK_CREATED
+  TASK_STATUS_UPDATED
+}
+
+model ActivityLog {
+  id          String        @id @default(cuid())
+
+  type        ActivityType
+
+  message     String
+
+  projectId   String
+  userId      String
+
+  taskId      String?
+
+  project     Project       @relation(fields: [projectId], references: [id])
+
+  user        User          @relation(fields: [userId], references: [id])
+
+  task        Task?         @relation(fields: [taskId], references: [id])
+
+  createdAt   DateTime      @default(now())
 }
