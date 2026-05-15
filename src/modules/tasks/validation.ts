@@ -19,4 +19,13 @@ export const createTaskSchema = z.object({
     projectId: z.string(),
 });
 
+export const updateTaskStatusSchema = z.object({
+    status: z.enum([
+        "TODO",
+        "IN_PROGRESS",
+        "DONE",
+    ]),
+});
+
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
+export type UpdateTaskStatusInput = z.infer<typeof updateTaskStatusSchema>;

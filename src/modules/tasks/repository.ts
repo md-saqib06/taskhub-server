@@ -43,3 +43,21 @@ export const getProjectTasks = async (
         },
     });
 };
+
+export const updateTaskStatus = async (
+    taskId: string,
+    status:
+        | "TODO"
+        | "IN_PROGRESS"
+        | "DONE"
+) => {
+    return prisma.task.update({
+        where: {
+            id: taskId,
+        },
+
+        data: {
+            status,
+        },
+    });
+};
