@@ -3,7 +3,11 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies first (layer cache)
+# Force development mode so npm ci installs devDependencies (typescript, @types/*)
+# Coolify injects NODE_ENV=production as a build ARG which would skip devDeps
+ENV NODE_ENV=development
+
+# Install ALL dependencies (including devDependencies for tsc)
 COPY package.json package-lock.json ./
 RUN npm ci
 
