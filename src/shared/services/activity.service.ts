@@ -11,7 +11,9 @@ export const createActivity = async ({
     | "PROJECT_CREATED"
     | "MEMBER_ADDED"
     | "TASK_CREATED"
-    | "TASK_STATUS_UPDATED";
+    | "TASK_UPDATED"
+    | "TASK_STATUS_UPDATED"
+    | "TASK_DELETED";
 
     message: string;
 

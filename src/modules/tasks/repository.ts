@@ -61,3 +61,35 @@ export const updateTaskStatus = async (
         },
     });
 };
+
+export const updateTask = async (
+    taskId: string,
+    data: any
+) => {
+    return prisma.task.update({
+        where: {
+            id: taskId,
+        },
+        data,
+        include: {
+            assignedUser: {
+                select: {
+                    id: true,
+                    name: true,
+                    username: true,
+                    avatarUrl: true,
+                },
+            },
+        },
+    });
+};
+
+export const deleteTask = async (
+    taskId: string
+) => {
+    return prisma.task.delete({
+        where: {
+            id: taskId,
+        },
+    });
+};

@@ -1,10 +1,12 @@
 import {
     createTask,
+    deleteTask,
     getProjectTasks,
+    updateTask,
     updateTaskStatus,
 } from "./repository";
 
-import { CreateTaskInput } from "./validation";
+import { CreateTaskInput, UpdateTaskInput } from "./validation";
 
 import { requireProjectMember } from "../../shared/utils/project-permissions";
 import prisma from "../../shared/prisma/prisma";
@@ -91,4 +93,81 @@ export const updateTaskStatusService = async (
     });
 
     return updatedTask;
+};
+
+export const updateTaskService = async (
+    taskId: string,
+    data: UpdateTaskInput,
+    userId: string
+) => {
+    const existingTask =
+        await prisma.task.findUnique({
+            where: {
+                id: taskId,
+            },
+        });
+
+    if (!existingTask) {
+        throw new Error(
+            "Task not found"
+        );
+    }
+
+    await requireProjectMember(
+        existingTask.projectId,
+        userId
+    );
+
+    const updatedTask =
+        await updateTask(taskId, {
+            ...data,
+
+            dueDate: data.dueDate
+                ? new Date(
+                    data.dueDate
+                )
+                : undefined,
+        });
+
+    await createActivity({
+        type: "TASK_UPDATED",
+        message: `Updated task "${updatedTask.title}"`,
+        userId,
+        projectId: updatedTask.projectId,
+        taskId: updatedTask.id,
+    });
+
+    return updatedTask;
+};
+
+export const deleteTaskService = async (
+    taskId: string,
+    userId: string
+) => {
+    const existingTask =
+        await prisma.task.findUnique({
+            where: {
+                id: taskId,
+            },
+        });
+
+    if (!existingTask) {
+        throw new Error(
+            "Task not found"
+        );
+    }
+
+    await requireProjectMember(
+        existingTask.projectId,
+        userId
+    );
+
+    await createActivity({
+        type: "TASK_DELETED",
+        message: `Deleted task "${existingTask.title}"`,
+        userId,
+        projectId: existingTask.projectId,
+    });
+
+    return deleteTask(taskId);
 };

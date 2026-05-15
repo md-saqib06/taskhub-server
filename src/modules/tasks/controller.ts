@@ -2,12 +2,15 @@ import { Request, Response } from "express";
 
 import {
     createTaskService,
+    deleteTaskService,
     getProjectTasksService,
+    updateTaskService,
     updateTaskStatusService,
 } from "./service";
 
 import {
     createTaskSchema,
+    updateTaskSchema,
     updateTaskStatusSchema,
 } from "./validation";
 
@@ -116,6 +119,74 @@ export const updateTaskStatusController = async (
         );
 
         res.status(200).json(task);
+    } catch (error) {
+        res.status(400).json({
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Something went wrong",
+        });
+    }
+};
+
+export const updateTaskController = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        const validatedData = updateTaskSchema.parse(
+            req.body
+        );
+
+        const userId = req.user?.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message:
+                    "Unauthorized",
+            });
+        }
+
+        const task = await updateTaskService(
+            req.params.id as string,
+            validatedData,
+            userId
+        );
+
+        res.status(200).json(task);
+    } catch (error) {
+        res.status(400).json({
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Something went wrong",
+        });
+    }
+};
+
+export const deleteTaskController = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        const userId = req.user?.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message:
+                    "Unauthorized",
+            });
+        }
+
+        await deleteTaskService(
+            req.params.id as string,
+            userId
+        );
+
+        res.status(200).json({
+            message:
+                "Task deleted",
+        });
     } catch (error) {
         res.status(400).json({
             message:
