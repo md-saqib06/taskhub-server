@@ -19,7 +19,19 @@ export const signupController = async (
 
         const result = await signupService(validatedData);
 
-        res.status(201).json(result);
+        const isProduction = process.env.NODE_ENV === "production";
+
+        res.cookie("token", result.token, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        res.status(201).json({
+            user: result.user,
+            ...(isProduction ? {} : { token: result.token }),
+        });
     } catch (error) {
         res.status(400).json({
             message:
@@ -39,7 +51,19 @@ export const loginController = async (
 
         const result = await loginService(validatedData);
 
-        res.status(200).json(result);
+        const isProduction = process.env.NODE_ENV === "production";
+
+        res.cookie("token", result.token, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        res.status(200).json({
+            user: result.user,
+            ...(isProduction ? {} : { token: result.token }),
+        });
     } catch (error) {
         res.status(400).json({
             message:

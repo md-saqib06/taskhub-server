@@ -1,26 +1,34 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export const authMiddleware = (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
     try {
-        const authHeader = req.headers.authorization;
+        const cookieToken = req.cookies.token;
 
-        if (!authHeader?.startsWith("Bearer ")) {
+        const bearerToken = req.headers.authorization?.split(" ")[1];
+
+        const token = isProduction
+            ? cookieToken
+            : cookieToken || bearerToken;
+
+        if (!token) {
             return res.status(401).json({
                 message: "Unauthorized",
             });
         }
 
-        const token = authHeader.split(" ")[1];
-
         const decoded = jwt.verify(
             token,
             process.env.JWT_SECRET as string
-        ) as { userId: string };
+        ) as {
+            userId: string;
+        };
 
         req.user = {
             userId: decoded.userId,
